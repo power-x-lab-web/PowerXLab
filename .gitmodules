@@ -1,3 +1,6 @@
 [submodule "Resources"]
 	path = Resources
 	url = https://github.com/power-x-lab-web/Resources.git
+[submodule "Guidance"]
+	path = Guidance
+	url = https://github.com/power-x-lab-web/Guidance.git
