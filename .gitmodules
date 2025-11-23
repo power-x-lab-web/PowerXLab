@@ -1,0 +1,6 @@
+[submodule "Resources"]
+	path = Resources
+	url = https://github.com/power-x-lab-web/Resources.git
+[submodule "Static"]
+	path = Static
+	url = https://github.com/power-x-lab-web/Static.git
