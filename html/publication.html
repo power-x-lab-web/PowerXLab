@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Power X Lab @ Tsinghua University - Publications</title>
+  <link rel="stylesheet" href="../CSS/style.css" />
+    <link rel="stylesheet" href="../CSS/pub.css" />
+</head>
+
+<body>
+  <header class="banner">
+   <div class="logo">
+      <a href="index.html">
+        <img src="../Resources/images/lab_logo.svg" alt="Power X Lab" />
+      </a>
+    </div>
+    <nav class="nav">
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="people.html">People</a></li>
+        <li><a href="publication.html" class="active">Publication</a></li>
+        <li><a href="project.html">Project</a></li>
+        <li><a href="Research.html">Research</a></li>
+        <li><a href="chip_gallery.html">Chip Gallery</a></li>
+      </ul>
+    </nav>
+  </header>
+
+<main>
+  <div class="container">
+    <header class="header">
+      <div>
+        <div class="title">Publications</div>
+      </div>
+      <div class="controls">
+        <select id="sort-select" class="select">
+          <option value="year-desc">By year: New → Old</option>
+          <option value="year-asc">By year: Old → New</option>
+          <option value="title-asc">By title: A → Z</option>
+        </select>
+        <input
+          id="search-input"
+          class="search-input"
+          type="search"
+          placeholder="By title / author / publisher"
+        />
+      </div>
+    </header>
+
+    <div id="status" class="status">Loading all publications…</div>
+
+    <section class="section">
+      <h2 class="section-title">Books</h2>
+      <ol id="book-list" class="pub-list"></ol>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Journal Articles</h2>
+      <ol id="journal-list" class="pub-list"></ol>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Conference Papers</h2>
+      <ol id="conf-list" class="pub-list"></ol>
+    </section>
+
+    <div id="empty-hint" class="empty-hint" style="display:none;">
+      No related publications, please change the keywords.
+    </div>
+  </div>
+  </main>
+
+  <script src="../JS/pub.js"></script>
+</body>
+</html>

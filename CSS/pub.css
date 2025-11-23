@@ -1,0 +1,223 @@
+/* ========== Publications 页面专用样式 ==========
+   颜色、字体等全部复用 style.css 里定义的变量
+   不再改动 body / nav，只管 main 里的 .container 等
+================================================ */
+
+/* 页面主体容器：白底卡片 + 阴影 */
+.container {
+  max-width: var(--content-width);
+  margin: 24px auto 40px;
+  padding: 24px 24px 28px;
+  background: var(--card-bg);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+/* 顶部标题 + 控件行 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  margin-top: 4px;
+}
+
+#status {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: var(--text-sub);
+}
+
+/* 排序下拉 + 搜索框 */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.select,
+.search-input {
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  background-color: #ffffff;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  min-height: 32px;
+  outline: none;
+  color: var(--text-main);
+}
+
+.select:focus,
+.search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary-soft);
+}
+
+.search-input {
+  min-width: 220px;
+}
+
+/* 顶栏下面的 filter pills（如果有） */
+.pill-group {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  background-color: transparent;
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.pill:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.pill.active {
+  background-color: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* 分 section 的标题（Journal / Conference） */
+.section {
+  margin-top: 18px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* 文献列表本体 */
+.pub-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 单条文献条目：左边索引号 + 右边文字 */
+.pub-item {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+  align-items: flex-start;
+}
+
+.pub-index {
+  min-width: 42px;
+  font-weight: 500;
+  color: var(--text-sub);
+}
+
+.pub-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  flex: 1;
+}
+
+/* 文献标题可以点击时的样式 */
+.pub-title-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.pub-title-link:hover {
+  text-decoration: underline;
+}
+
+/* 过滤后无结果提示 */
+.empty-hint {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  margin-top: 10px;
+}
+
+.pub-doi-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: 4px;
+  margin-top: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border-soft);
+  background-color: #f9fafb;
+  color: var(--primary);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.12s ease, box-shadow 0.12s ease;
+  vertical-align: middle;
+}
+
+.pub-doi-link:hover {
+  color: #ffffff;
+  background-color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 8px 18px rgba(102, 8, 116, 0.22);
+  transform: translateY(-1px);
+}
+
+.pub-doi-link:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.pub-doi-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+/* ========== Publications 页面在手机端的适配 ========== */
+
+@media (max-width: 768px) {
+  .container {
+    margin: 16px auto 28px;
+    padding: 18px 16px 22px;
+  }
+
+  .header {
+    align-items: flex-start;
+  }
+
+  .controls {
+    width: 100%;
+  }
+
+  .search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}

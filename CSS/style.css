@@ -1,0 +1,500 @@
+/* ========== 全站统一主题变量 ========== */
+:root {
+  --bg: #f5f5f7;
+  --content-width: 1120px;
+
+  --primary: #660874;            /* 顶部蓝色，保持现有风格 */
+  --primary-soft: #e4edf9;
+  --card-bg: #ffffff;
+
+  --text-main: #111827;
+  --text-sub: #6b7280;
+
+  --border-soft: #e5e7eb;
+  --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.08);
+  --radius-card: 12px;
+}
+
+/* 全局盒模型 & 基础排版 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: var(--bg);
+  color: var(--text-main);
+}
+
+/* 链接默认不带下划线，颜色随文字 */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ========== 顶部 Banner / 导航（所有页面共用） ========== */
+
+.banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 32px;
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+}
+
+.logo a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;                 /* 图和文字的间距 */
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.logo img {
+  height: 50px;            /* 根据你 logo 比例微调 */
+  width: auto;             /* 让宽度跟着比例走 */
+  display: block;
+}
+
+/* 顶部导航 */
+.nav ul {
+  list-style: none;
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav li {
+  margin: 0;
+  padding: 0;
+}
+
+.nav a {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 14px;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.nav a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.nav a.active {
+  background: #ffffff;
+  color: var(--primary);
+}
+
+/* ========== 页面主体布局（所有页面共用） ========== */
+
+main {
+  max-width: var(--content-width);
+  margin: 24px auto 40px;
+  padding: 0 24px;
+}
+
+h1 {
+  margin: 0 0 0.75rem;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+h2 {
+  margin: 1.75rem 0 0.75rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+p {
+  margin: 0 0 0.8rem;
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+ul {
+  margin: 0.25rem 0 0.9rem;
+  padding-left: 1.2rem;
+}
+
+li {
+  font-size: 0.96rem;
+  line-height: 1.6;
+}
+
+/* 可以给 section 标题下面一点细线（可选） */
+/*
+h2::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 2px;
+  margin-top: 4px;
+  background: var(--primary-soft);
+}
+*/
+
+/* ========== People 页面统一卡片风格 ========== */
+
+/* 名字 + 图标在一行 */
+.person-header-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* 头部行中的名字，不要太大 margin */
+.person-name {
+  font-weight: 600;
+  margin-top: 0;        /* 之前如果是 8px，可以去掉 */
+}
+
+/* 放在 header 里时，图标行不要再有额外的上边距 */
+.person-links {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* People 页面相关样式 */
+.people-container {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: start;
+}
+
+/* 通用卡片样式 */
+.person-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* 点击头像后展开的抽屉区域 */
+.person-drawer {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  border-top: 1px solid var(--border-soft);
+  box-shadow: none;
+  padding: 12px 0 6px;
+}
+
+.person-drawer-row {
+  grid-column: 1 / -1;
+  background: #ffffff;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+
+.person-drawer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+
+/* 头部：头像 + 文本一体化 */
+.person-drawer-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.person-drawer-header.inline {
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.person-drawer-avatar-wrap {
+  flex-shrink: 0;
+}
+
+.person-drawer-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.person-drawer-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.person-drawer-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.person-drawer-position {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-sub);
+}
+
+.person-drawer-section + .person-drawer-section {
+  margin-top: 12px;
+}
+
+.person-drawer-section-title {
+  margin: 0 0 4px;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-main);
+}
+
+.person-drawer-text {
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  color: var(--text-sub);
+}
+
+.person-drawer-pubs {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.person-drawer .pub-list {
+  gap: 6px;
+}
+
+.person-drawer .pub-item {
+  padding: 6px 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  align-items: flex-start;
+}
+
+.person-drawer .pub-index {
+  min-width: 34px;
+}
+
+.person-drawer .section-title {
+  font-size: 15px;
+  margin: 6px 0 6px;
+  font-weight: 600;
+}
+
+.person-drawer .pub-text {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* 抽屉展开时，高亮卡片边框 */
+.person-card.is-open {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-soft);
+}
+
+/* 头像按钮：去掉 button 默认样式 */
+.person-photo-button {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+}
+
+/* 非 PI 基本信息区域 */
+.person-basic {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.person-position {
+  font-size: 14px;
+  color: var(--text-sub);
+  margin-bottom: 4px;
+}
+
+.person-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* 利用已有的 icon 样式 */
+.icon-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-image {
+  width: 18px;
+  height: 18px;
+} 
+
+
+
+
+
+/* 统一头像显示尺寸，和 card 宽度解耦 */
+.person-photo {
+  width: 230px;          /* 或者你原来喜欢的宽度，比如 230 */
+  height: 307px;         /* 约 3:4 比例，对应 450x600 的缩放 */
+  object-fit: cover;
+  border-radius: 6px;
+  background: #ddd;
+  display: block;
+  margin: 0 auto;        /* 水平居中，不占满整个 card */
+  max-width: 100%;
+}
+
+.person-name {
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.person-position {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.person-intro {
+  font-size: 13px;
+  margin-top: 6px;
+  white-space: pre-wrap;
+}
+
+/* 邮箱 / Scholar 图标行 */
+.person-links {
+  margin-top: 6px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.person-drawer-header .person-links {
+  margin-top: 0;
+}
+
+.icon-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background-color: #f3f4f6;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.icon-link:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.icon-image {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+/* PI 特殊布局：图片左，文字右 */
+#pi-container {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 24px;
+}
+
+#pi-container .person-card.pi-card {
+  display: flex;
+  width: 100%;
+  max-width: none;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+}
+
+.pi-photo-wrap {
+  flex: 0 0 auto;
+}
+
+.pi-photo-wrap .person-photo {
+  width: 225px;   /* 显示约 225x300，配合源文件 450x600 更清晰 */
+  height: 300px;
+}
+
+.pi-info {
+  flex: 1;
+  padding-left: 20px;
+}
+
+/* 非 PI：大屏每行最多五个 */
+.people-container:not(#pi-container) .person-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 1099px) and (min-width: 768px) {
+  .people-container:not(#pi-container) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) and (min-width: 520px) {
+  .people-container:not(#pi-container) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 519px) {
+  .people-container:not(#pi-container) {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+/* ========== 小屏幕适配 ========== */
+
+@media (max-width: 768px) {
+  .banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  main {
+    padding: 16px 16px 32px;
+    margin-top: 16px;
+  }
+
+  .person-card {
+    width: 100%;
+    max-width: 360px;
+  }
+}
