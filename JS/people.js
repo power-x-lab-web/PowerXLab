@@ -614,13 +614,31 @@ function openDrawerForPerson(person, card) {
           if (!res.ok) {
             throw new Error("HTTP " + res.status);
           }
-          return res.text();
+          return res.text().then(function (txt) {
+            // 某些静态托管（如 Cloudflare Pages）缺文件时会 fallback 到 index.html
+            // 若响应体疑似 HTML，直接视为无 pub 文件
+            var ctype = (res.headers.get("content-type") || "").toLowerCase();
+            if (ctype.indexOf("text/html") !== -1) {
+              person._hasPubFile = false;
+              removePubSection();
+              return null;
+            }
+            return txt;
+          });
         })
         .then(function (txt) {
           if (txt === null) return;
 
           // 空文件视为无 publications
           if (!txt.trim()) {
+            person._hasPubFile = false;
+            removePubSection();
+            return;
+          }
+
+          // fallback 到 HTML（比如云端 200 + index.html）也当作无 pub
+          var lower = txt.toLowerCase().trim();
+          if (lower.indexOf("<!doctype html") === 0 || lower.indexOf("<html") === 0) {
             person._hasPubFile = false;
             removePubSection();
             return;
