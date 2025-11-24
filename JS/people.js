@@ -541,20 +541,26 @@ function openDrawerForPerson(person, card) {
   }
 
   // Publications：读取个人目录 pub.txt
-  var sec3 = document.createElement("div");
-  sec3.className = "person-drawer-section";
+  var sec3 = null;
+  var pubsBody = null;
+  var shouldTryPub = person.pubUrl && person._hasPubFile !== false;
 
-  var secTitle3 = document.createElement("div");
-  secTitle3.className = "person-drawer-section-title";
-  secTitle3.textContent = "Publications";
-  sec3.appendChild(secTitle3);
+  if (shouldTryPub) {
+    sec3 = document.createElement("div");
+    sec3.className = "person-drawer-section";
 
-  var pubsBody = document.createElement("div");
-  pubsBody.className = "person-drawer-pubs";
-  pubsBody.textContent = "Loading publications…";
-  sec3.appendChild(pubsBody);
+    var secTitle3 = document.createElement("div");
+    secTitle3.className = "person-drawer-section-title";
+    secTitle3.textContent = "Publications";
+    sec3.appendChild(secTitle3);
 
-  inner.appendChild(sec3);
+    pubsBody = document.createElement("div");
+    pubsBody.className = "person-drawer-pubs";
+    pubsBody.textContent = "Loading publications…";
+    sec3.appendChild(pubsBody);
+
+    inner.appendChild(sec3);
+  }
 
   drawer.appendChild(inner);
 
@@ -582,28 +588,48 @@ function openDrawerForPerson(person, card) {
 
   currentDrawerEl = drawer;
 
-  // 延迟加载 pub.txt，并缓存
-  if (person._pubLoaded && person._pubHtml != null) {
-    pubsBody.innerHTML = person._pubHtml;
-  } else if (person.pubUrl) {
-    fetch(person.pubUrl)
-      .then(function (res) {
-        if (!res.ok) {
-          throw new Error("HTTP " + res.status);
-        }
-        return res.text();
-      })
-      .then(function (txt) {
-        var html = pubTextToHtml(txt);
-        person._pubLoaded = true;
-        person._pubHtml = html;
-        pubsBody.innerHTML = html;
-      })
-      .catch(function () {
-        pubsBody.textContent = "Failed to load publications.";
-      });
-  } else {
-    pubsBody.innerHTML = "<em>No publications file.</em>";
+  // 延迟加载 pub.txt，并缓存。如果没有 pub.txt 则不展示该 section
+  if (sec3 && pubsBody) {
+    var removePubSection = function () {
+      if (sec3.parentNode) {
+        sec3.parentNode.removeChild(sec3);
+      }
+      person._hasPubFile = false;
+    };
+
+    if (person._hasPubFile === false) {
+      removePubSection();
+      return;
+    }
+
+    if (person._pubLoaded && person._pubHtml != null) {
+      pubsBody.innerHTML = person._pubHtml;
+    } else if (person.pubUrl) {
+      fetch(person.pubUrl)
+        .then(function (res) {
+          if (res.status === 404) {
+            removePubSection();
+            return null;
+          }
+          if (!res.ok) {
+            throw new Error("HTTP " + res.status);
+          }
+          return res.text();
+        })
+        .then(function (txt) {
+          if (txt === null) return;
+          var html = pubTextToHtml(txt);
+          person._pubLoaded = true;
+          person._hasPubFile = true;
+          person._pubHtml = html;
+          pubsBody.innerHTML = html;
+        })
+        .catch(function () {
+          pubsBody.textContent = "Failed to load publications.";
+        });
+    } else {
+      removePubSection();
+    }
   }
 }
 
