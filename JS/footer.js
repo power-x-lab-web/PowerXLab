@@ -31,11 +31,22 @@ function findWebsite(text) {
 }
 
 function findEmail(text) {
-  const match = text.match(/Email:\s*(\S+)/i);
+  const match = text.match(/Email[:：]\s*([^\s]+)/i);
   return match ? match[1].trim() : "";
 }
 
-async function buildPersonLink(name, { fallbackEmail = false } = {}) {
+function normalizeHref({ website, email, preferEmail }) {
+  const safeWebsite =
+    website && /^https?:\/\//i.test(website) ? website : "";
+  const safeMail = email ? `mailto:${email}` : "";
+
+  if (preferEmail && safeMail) return safeMail;
+  if (safeWebsite) return safeWebsite;
+  if (safeMail) return safeMail;
+  return "";
+}
+
+async function buildPersonLink(name, { preferEmail = false } = {}) {
   const folder = name.trim().replace(/\s+/g, "_");
   const introPath = `${footerBasePrefix}/Resources/people/${folder}/intro.txt`;
 
@@ -43,14 +54,7 @@ async function buildPersonLink(name, { fallbackEmail = false } = {}) {
     const intro = await fetchText(introPath);
     const website = findWebsite(intro);
     const email = findEmail(intro);
-    let href = "";
-    if (website) {
-      href = website;
-    } else if (fallbackEmail && email) {
-      href = `mailto:${email}`;
-    } else {
-      href = email ? `mailto:${email}` : "";
-    }
+    const href = normalizeHref({ website, email, preferEmail });
     return textToLink(name, href);
   } catch (err) {
     return textToLink(name, "");
@@ -102,7 +106,7 @@ async function loadMaintainers() {
     if (i > 0) {
       fragments.appendChild(document.createTextNode(", "));
     }
-    const linkEl = await buildPersonLink(names[i], { fallbackEmail: true });
+    const linkEl = await buildPersonLink(names[i], { preferEmail: true });
     fragments.appendChild(linkEl);
   }
 
