@@ -160,6 +160,36 @@ function parseIntroText(text) {
 }
 // ------- 联系方式图标行（Email / Scholar / Website / LinkedIn） -------
 
+function encodeEmailForLink(email) {
+  try {
+    return window.btoa(email);
+  } catch (err) {
+    return "";
+  }
+}
+
+function decodeEmailForLink(encoded) {
+  try {
+    return window.atob(encoded);
+  } catch (err) {
+    return "";
+  }
+}
+
+function attachObfuscatedMailto(anchor, email) {
+  var encoded = encodeEmailForLink(email);
+  if (!encoded) return;
+
+  anchor.href = "#";
+  anchor.addEventListener("click", function (e) {
+    e.preventDefault();
+    var decoded = decodeEmailForLink(encoded);
+    if (decoded) {
+      window.location.href = "mailto:" + decoded;
+    }
+  });
+}
+
 function createLinksRow(person) {
   var hasEmail = !!person.email;
   var hasScholar = !!person.scholar;
@@ -176,7 +206,7 @@ function createLinksRow(person) {
   if (hasEmail) {
     var aMail = document.createElement("a");
     aMail.className = "icon-link";
-    aMail.href = "mailto:" + person.email;
+    attachObfuscatedMailto(aMail, person.email);
 
     var imgMail = document.createElement("img");
     imgMail.src = "../Resources/icons/email.svg";

@@ -1,18 +1,61 @@
 const footerBasePrefix = window.location.pathname.includes("/html/") ? ".." : ".";
 
-function textToLink(text, href) {
+function encodeEmailForLink(email) {
+  try {
+    return window.btoa(email);
+  } catch (err) {
+    return "";
+  }
+}
+
+function decodeEmailForLink(encoded) {
+  try {
+    return window.atob(encoded);
+  } catch (err) {
+    return "";
+  }
+}
+
+function attachObfuscatedMailto(anchor, email) {
+  const encoded = encodeEmailForLink(email);
+  if (!encoded) return;
+
+  anchor.href = "#";
+  anchor.addEventListener("click", (e) => {
+    e.preventDefault();
+    const decoded = decodeEmailForLink(encoded);
+    if (decoded) {
+      window.location.href = `mailto:${decoded}`;
+    }
+  });
+}
+
+function textToLink(text, options) {
   const span = document.createElement("span");
-  if (!href) {
+  const config =
+    typeof options === "string" ? { href: options } : options || {};
+
+  const href = config.href || "";
+  const email = config.email || "";
+
+  if (!href && !email) {
     span.textContent = text;
     return span;
   }
+
   const anchor = document.createElement("a");
   anchor.textContent = text;
-  anchor.href = href;
-  if (href.startsWith("http")) {
-    anchor.target = "_blank";
-    anchor.rel = "noopener noreferrer";
+
+  if (email) {
+    attachObfuscatedMailto(anchor, email);
+  } else {
+    anchor.href = href;
+    if (href.startsWith("http")) {
+      anchor.target = "_blank";
+      anchor.rel = "noopener noreferrer";
+    }
   }
+
   span.appendChild(anchor);
   return span;
 }
@@ -35,17 +78,6 @@ function findEmail(text) {
   return match ? match[1].trim() : "";
 }
 
-function normalizeHref({ website, email, preferEmail }) {
-  const safeWebsite =
-    website && /^https?:\/\//i.test(website) ? website : "";
-  const safeMail = email ? `mailto:${email}` : "";
-
-  if (preferEmail && safeMail) return safeMail;
-  if (safeWebsite) return safeWebsite;
-  if (safeMail) return safeMail;
-  return "";
-}
-
 async function buildPersonLink(name, { preferEmail = false } = {}) {
   const folder = name.trim().replace(/\s+/g, "_");
   const introPath = `${footerBasePrefix}/Resources/people/${folder}/intro.txt`;
@@ -54,10 +86,21 @@ async function buildPersonLink(name, { preferEmail = false } = {}) {
     const intro = await fetchText(introPath);
     const website = findWebsite(intro);
     const email = findEmail(intro);
-    const href = normalizeHref({ website, email, preferEmail });
-    return textToLink(name, href);
+    const safeWebsite =
+      website && /^https?:\/\//i.test(website) ? website : "";
+
+    if (preferEmail && email) {
+      return textToLink(name, { email });
+    }
+    if (safeWebsite) {
+      return textToLink(name, { href: safeWebsite });
+    }
+    if (email) {
+      return textToLink(name, { email });
+    }
+    return textToLink(name, {});
   } catch (err) {
-    return textToLink(name, "");
+    return textToLink(name, {});
   }
 }
 
