@@ -35,8 +35,8 @@ function parsePeopleText(text) {
     "postdoc researcher": "postdoc",
     "graduate students": "graduate",
     "bachelor intership & visiting scholar": "bachelor_visiting",
-    "alumni": "alumni"
-    // Staff 目前 people.html 没有对应 container，这里先不渲染
+    staff: "staff",
+    alumni: "alumni"
   };
 
   var data = {
@@ -44,6 +44,7 @@ function parsePeopleText(text) {
     postdoc: [],
     graduate: [],
     bachelor_visiting: [],
+    staff: [],
     alumni: []
   };
 
@@ -776,9 +777,17 @@ function renderPeople(data) {
   var bachelorVisitingContainer = document.getElementById(
     "bachelor_visiting-container"
   );
+  var staffContainer = document.getElementById("staff-container");
   var alumniContainer = document.getElementById("alumni-container");
 
-  [piContainer, postdocContainer, graduateContainer, bachelorVisitingContainer, alumniContainer].forEach(
+  [
+    piContainer,
+    postdocContainer,
+    graduateContainer,
+    bachelorVisitingContainer,
+    staffContainer,
+    alumniContainer
+  ].forEach(
     function (c) {
       if (c) c.innerHTML = "";
     }
@@ -799,6 +808,10 @@ function renderPeople(data) {
 
   data.bachelor_visiting.forEach(function (p) {
     bachelorVisitingContainer.appendChild(createPersonCard(p));
+  });
+
+  data.staff.forEach(function (p) {
+    staffContainer.appendChild(createPersonCard(p));
   });
 
   data.alumni.forEach(function (p) {
@@ -825,6 +838,7 @@ function loadPeople() {
           parsed.postdoc,
           parsed.graduate,
           parsed.bachelor_visiting,
+          parsed.staff,
           parsed.alumni
         );
 
