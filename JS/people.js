@@ -1,15 +1,29 @@
 // ------- 名字 -> 目录名、资源路径 -------
-function nameToFolder(name) {
-  return name.trim().replace(/\s+/g, "_"); // "Yan Lu" -> "Yan_Lu"
+// 兼容 “Yan_Lu” 与 “Yan Lu” 两种目录命名
+function nameToFolderVariants(name) {
+  var trimmed = name.trim();
+  var underscore = trimmed.replace(/\s+/g, "_");
+  var spaced = trimmed.replace(/\s+/g, " ");
+  var list = [];
+
+  [underscore, spaced].forEach(function (item) {
+    if (item && list.indexOf(item) === -1) {
+      list.push(item);
+    }
+  });
+
+  return list.length ? list : [trimmed];
 }
 
 function buildAssetsForPerson(name) {
-  var folder = "../Resources/people/" + nameToFolder(name) + "/";
-  return {
-    photoUrl: folder + "photo.jpg",
-    introUrl: folder + "intro.txt",
-    pubUrl: folder + "pub.txt"
-  };
+  return nameToFolderVariants(name).map(function (folderName) {
+    var folder = "../Resources/people/" + folderName + "/";
+    return {
+      photoUrl: folder + "photo.jpg",
+      introUrl: folder + "intro.txt",
+      pubUrl: folder + "pub.txt"
+    };
+  });
 }
 
 // ------- 解析 people.txt -------
@@ -705,42 +719,52 @@ function createPersonCard(person) {
 // ------- 加载 intro.txt -------
 
 function loadIntroForPerson(person) {
-  var assets = buildAssetsForPerson(person.name);
-  person.photoUrl = assets.photoUrl;
-  person.pubUrl = assets.pubUrl;
+  var candidates = buildAssetsForPerson(person.name);
 
-  return fetch(assets.introUrl)
-    .then(function (res) {
-      if (!res.ok) {
-        person.intro = "";
-        person.position = "";
-        person.scholar = "";
-        person.email = "";
-        person.linkedin = "";
-        person.website = "";
-        person.research = "";
-        return;
-      }
-      return res.text().then(function (txt) {
-        var parsed = parseIntroText(txt);
-        person.intro = parsed.intro;
-        person.position = parsed.position;
-        person.scholar = parsed.scholar;
-        person.email = parsed.email;
-        person.linkedin = parsed.linkedin;
-        person.website = parsed.website;
-        person.research = parsed.research;
+  function clearPersonFields() {
+    person.intro = "";
+    person.position = "";
+    person.scholar = "";
+    person.email = "";
+    person.linkedin = "";
+    person.website = "";
+    person.research = "";
+    person.photoUrl = "";
+    person.pubUrl = "";
+  }
+
+  function tryLoad(index) {
+    if (index >= candidates.length) {
+      clearPersonFields();
+      return Promise.resolve();
+    }
+
+    var assets = candidates[index];
+    person.photoUrl = assets.photoUrl;
+    person.pubUrl = assets.pubUrl;
+
+    return fetch(assets.introUrl)
+      .then(function (res) {
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status);
+        }
+        return res.text().then(function (txt) {
+          var parsed = parseIntroText(txt);
+          person.intro = parsed.intro;
+          person.position = parsed.position;
+          person.scholar = parsed.scholar;
+          person.email = parsed.email;
+          person.linkedin = parsed.linkedin;
+          person.website = parsed.website;
+          person.research = parsed.research;
+        });
+      })
+      .catch(function () {
+        return tryLoad(index + 1);
       });
-    })
-    .catch(function () {
-      person.intro = "";
-      person.position = "";
-      person.scholar = "";
-      person.email = "";
-      person.linkedin = "";
-      person.website = "";
-      person.research = "";
-    });
+  }
+
+  return tryLoad(0);
 }
 
 // ------- 渲染到页面 -------
