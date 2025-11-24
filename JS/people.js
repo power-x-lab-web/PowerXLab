@@ -618,7 +618,21 @@ function openDrawerForPerson(person, card) {
         })
         .then(function (txt) {
           if (txt === null) return;
+
+          // 空文件视为无 publications
+          if (!txt.trim()) {
+            person._hasPubFile = false;
+            removePubSection();
+            return;
+          }
+
           var html = pubTextToHtml(txt);
+          if (!html.trim()) {
+            person._hasPubFile = false;
+            removePubSection();
+            return;
+          }
+
           person._pubLoaded = true;
           person._hasPubFile = true;
           person._pubHtml = html;
