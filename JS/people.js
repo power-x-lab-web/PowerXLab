@@ -895,7 +895,7 @@ function createAlumniCard(person) {
 
   card.appendChild(header);
 
-  if (person._hasAssets === false) {
+  if (person._hasAssets !== true) {
     card.classList.add("alumni-no-drawer");
   } else {
     card.addEventListener("click", function (e) {
@@ -1028,7 +1028,7 @@ function createPersonCard(person) {
 function loadIntroForPerson(person) {
   var baseDir = person.assetsBase || "../Resources/people/Current/";
   var candidates = buildAssetsForPerson(person.name, baseDir);
-  person._hasAssets = null;
+  person._hasAssets = false;
 
   function clearPersonFields() {
     person.intro = "";
@@ -1058,7 +1058,18 @@ function loadIntroForPerson(person) {
         if (!res.ok) {
           throw new Error("HTTP " + res.status);
         }
+        var ctype = (res.headers.get("content-type") || "").toLowerCase();
         return res.text().then(function (txt) {
+          var trimmed = txt.trim();
+          // Treat HTML fallback or empty as invalid, try next candidate
+          var looksHtml =
+            ctype.indexOf("text/html") !== -1 ||
+            /^\\s*<!doctype html/i.test(trimmed) ||
+            /^\\s*<html/i.test(trimmed);
+          if (!trimmed || looksHtml) {
+            throw new Error("Invalid intro content");
+          }
+
           person._hasAssets = true;
           var parsed = parseIntroText(txt);
           person.intro = parsed.intro;
