@@ -122,6 +122,11 @@ h2 {
   font-weight: 600;
 }
 
+.people-page h2 {
+  font-size: 1.6rem;
+  font-weight: 650;
+}
+
 p {
   margin: 0 0 0.8rem;
   font-size: 0.98rem;
@@ -180,6 +185,131 @@ h2::after {
   gap: 16px;
   margin-bottom: 24px;
   align-items: start;
+}
+
+.alumni-container {
+  display: block;
+}
+
+.alumni-section {
+  margin-bottom: 24px;
+}
+
+.alumni-section > h3 {
+  margin: 0 0 12px 0;
+}
+
+.alumni-section .people-container {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alumni-card {
+  width: 100%;
+  cursor: pointer;
+  padding: 14px 16px;
+}
+
+.alumni-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.alumni-card-text {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.alumni-card .person-name {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+}
+
+.alumni-role,
+.alumni-position {
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.alumni-details {
+  color: #374151;
+  font-size: 14px;
+  display: inline;
+}
+
+.alumni-links {
+  margin-left: auto;
+}
+
+.alumni-links .icon-link {
+  display: inline-flex;
+}
+
+.alumni-card .person-links {
+  margin-top: 0;
+}
+
+.alumni-drawer .person-drawer-inner {
+  gap: 16px;
+}
+
+.alumni-drawer-top {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.alumni-drawer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alumni-container .person-drawer-row {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.alumni-drawer-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.alumni-drawer-photo .person-photo {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.alumni-drawer-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alumni-drawer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.alumni-drawer-right .person-drawer-section {
+  margin: 0;
+}
+
+.alumni-pubs {
+  border-top: 1px solid var(--border-soft);
+  padding-top: 10px;
 }
 
 /* 通用卡片样式 */
