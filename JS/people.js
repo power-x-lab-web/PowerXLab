@@ -895,14 +895,18 @@ function createAlumniCard(person) {
 
   card.appendChild(header);
 
-  card.addEventListener("click", function (e) {
-    // 允许点击链接单独打开
-    if (e.target.closest && e.target.closest("a")) {
-      return;
-    }
-    e.preventDefault();
-    openDrawerForPerson(person, card);
-  });
+  if (person._hasAssets === false) {
+    card.classList.add("alumni-no-drawer");
+  } else {
+    card.addEventListener("click", function (e) {
+      // 允许点击链接单独打开
+      if (e.target.closest && e.target.closest("a")) {
+        return;
+      }
+      e.preventDefault();
+      openDrawerForPerson(person, card);
+    });
+  }
 
   return card;
 }

@@ -212,6 +212,10 @@ h2::after {
   padding: 14px 16px;
 }
 
+.alumni-no-drawer {
+  cursor: default;
+}
+
 .alumni-card-header {
   display: flex;
   align-items: center;
