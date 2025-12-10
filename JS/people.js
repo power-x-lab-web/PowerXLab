@@ -21,6 +21,7 @@ function buildAssetsForPerson(name, baseDir) {
   return nameToFolderVariants(name).map(function (folderName) {
     var folder = base + folderName + "/";
     return {
+      folder: folder,
       photoUrl: folder + "photo.jpg",
       introUrl: folder + "intro.txt",
       pubUrl: folder + "pub.txt"
@@ -925,6 +926,9 @@ function createPersonCard(person) {
     var card = document.createElement("div");
     card.className = "person-card pi-card";
 
+    var topWrap = document.createElement("div");
+    topWrap.className = "pi-card-top";
+
     var imgWrap = document.createElement("div");
     imgWrap.className = "pi-photo-wrap";
 
@@ -969,8 +973,126 @@ function createPersonCard(person) {
       info.appendChild(introEl);
     }
 
-    card.appendChild(imgWrap);
-    card.appendChild(info);
+    topWrap.appendChild(imgWrap);
+    topWrap.appendChild(info);
+    card.appendChild(topWrap);
+
+    var hasExtra =
+      (person.services && person.services.trim()) ||
+      (person.awards && person.awards.trim());
+
+    if (hasExtra) {
+      var extra = document.createElement("div");
+      extra.className = "pi-extra";
+
+      function createExtraSection(title, text) {
+        var wrap = document.createElement("div");
+        wrap.className = "pi-extra-section";
+        var t = document.createElement("div");
+        t.className = "pi-extra-title";
+        t.textContent = title;
+        wrap.appendChild(t);
+        var body = document.createElement("div");
+        body.className = "pi-extra-text";
+        wrap.appendChild(body);
+
+        // 如果是多行内容，尝试拆成 list，右侧为年份
+        var lines = String(text || "").split(/\r?\n/).map(function (l) {
+          return l.trim();
+        }).filter(Boolean);
+
+        if (lines.length) {
+          var ul = document.createElement("ul");
+          ul.className = "pi-extra-list";
+
+          lines.forEach(function (line) {
+            var li = document.createElement("li");
+            li.className = "pi-extra-item";
+
+            // 用 "//" 拆分，最后一段若是年份则右对齐
+            var rawLine = line.trim();
+            var parts = rawLine
+              .split("//")
+              .map(function (p) {
+                return p.trim();
+              })
+              .filter(Boolean);
+
+            var rawLine = line.trim();
+            var rawLineNoSep = rawLine.replace(/\s*\/\/\s*/g, " ").trim();
+
+            var year = "";
+            var yearRegex = /^\\d{4}(?:\\s*[\\-–—−]\\s*\\d{4})?(?:\\s*,\\s*\\d{4})*$/;
+            if (parts.length > 1 && yearRegex.test(parts[parts.length - 1])) {
+              year = parts.pop().replace(/[–—−]/g, "-");
+            }
+
+            var main = parts.join(" ").trim();
+
+            // 若未找到年份且整行以年份结尾，尝试直接截取
+            if (!year) {
+              var tailMatch = rawLineNoSep.match(/^(.*?)(\d{4}(?:\s*[\\-–—−]\s*\d{4})?(?:\s*,\s*\d{4})*)\s*$/);
+              if (tailMatch) {
+                main = tailMatch[1].trim();
+                year = tailMatch[2].replace(/[–—−]/g, "-").trim();
+              }
+            }
+            if (main) {
+              var spanMain = document.createElement("span");
+              spanMain.className = "pi-extra-main";
+              spanMain.textContent = main;
+              li.appendChild(spanMain);
+            }
+            if (year) {
+              var spanYear = document.createElement("span");
+              spanYear.className = "pi-extra-year";
+              spanYear.textContent = year;
+              li.appendChild(spanYear);
+            }
+            if (!main && !year) {
+              li.textContent = line;
+            }
+
+            ul.appendChild(li);
+          });
+
+          body.appendChild(ul);
+        } else {
+          body.textContent = text;
+        }
+        return wrap;
+      }
+
+      if (person.services && person.services.trim()) {
+        extra.appendChild(createExtraSection("Services", person.services.trim()));
+      }
+      if (person.awards && person.awards.trim()) {
+        extra.appendChild(createExtraSection("Awards", person.awards.trim()));
+      }
+
+      var toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "pi-see-more";
+      toggle.setAttribute("aria-expanded", "false");
+
+      var toggleText = document.createElement("span");
+      toggleText.textContent = "See more...";
+      toggle.appendChild(toggleText);
+
+      var toggleIcon = document.createElement("img");
+      toggleIcon.src = "../Resources/icons/angles-down.svg";
+      toggleIcon.alt = "";
+      toggleIcon.className = "pi-see-more-icon";
+      toggle.appendChild(toggleIcon);
+
+      toggle.addEventListener("click", function () {
+        var isOpen = card.classList.toggle("pi-expanded");
+        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      });
+
+      info.appendChild(toggle);
+      card.appendChild(extra);
+    }
 
     return card;
   } else {
@@ -1071,6 +1193,7 @@ function loadIntroForPerson(person) {
           }
 
           person._hasAssets = true;
+          person._assetFolder = assets.folder;
           var parsed = parseIntroText(txt);
           person.intro = parsed.intro;
           person.position = parsed.position;
@@ -1079,6 +1202,48 @@ function loadIntroForPerson(person) {
           person.linkedin = parsed.linkedin;
           person.website = parsed.website;
           person.research = parsed.research;
+
+          var isPI =
+            person.role &&
+            person.role.toLowerCase().indexOf("principal investigator") === 0;
+
+          if (!isPI) {
+            return;
+          }
+
+          function loadOptionalText(url) {
+            if (!url) return Promise.resolve("");
+            return fetch(url)
+              .then(function (r) {
+                if (r.status === 404) throw new Error("404");
+                if (!r.ok) throw new Error("HTTP " + r.status);
+                var ctype2 = (r.headers.get("content-type") || "").toLowerCase();
+                return r.text().then(function (t) {
+                  var trimmed2 = t.trim();
+                  var looksHtml2 =
+                    ctype2.indexOf("text/html") !== -1 ||
+                    /^\\s*<!doctype html/i.test(trimmed2) ||
+                    /^\\s*<html/i.test(trimmed2);
+                  if (!trimmed2 || looksHtml2) throw new Error("Invalid");
+                  return trimmed2;
+                });
+              })
+              .catch(function () {
+                return "";
+              });
+          }
+
+          var folder = assets.folder || "";
+          var servicesUrl = folder ? folder + "sevices.txt" : "";
+          var awardsUrl = folder ? folder + "awards.txt" : "";
+
+          return Promise.all([
+            loadOptionalText(servicesUrl),
+            loadOptionalText(awardsUrl)
+          ]).then(function (extraTexts) {
+            person.services = extraTexts[0];
+            person.awards = extraTexts[1];
+          });
         });
       })
       .catch(function () {
